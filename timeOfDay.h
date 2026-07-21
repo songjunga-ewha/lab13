@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include <iomanip>
+#include "timeException.h"
+
 namespace songjunga2549023
 {
     class timeOfDay
@@ -9,18 +11,24 @@ namespace songjunga2549023
         int hour{};
         int minute{};
         void testHour(){
-            if ( hour< 0 || hour > 23 ) {
-            std::cout << "invalid hour\n";
-            std::exit(1);
-            }
+            if ( hour< 0 || hour > 23 ) 
+            //std::cout << "invalid hour\n"; std::exit(1);
+            throw timeException{"invalid hour\n"};
+            
+            
         }
         
         void testMinute(){
-            if( minute< 0 || minute >59 ) {
-            std::cout << "invalid hour\n";
-            std::exit(1);
-            }
+            if( minute< 0 || minute >59 ) 
+            //std::cout << "invalid hour\n"; std::exit(1);
+            throw timeException{"invalid minute\n"};
+            
+            
         }
+// 3. timeOfDay.h: 지난 실습에서 만든 클래스에 다음을 변경
+
+// std::exit함수를 호출하는 부분을 예외클래스에 메시지를 넣어 던지게 변경
+
 
     public: 
         timeOfDay(int h=0, int m =0): hour{h}, minute{m} {
@@ -28,14 +36,26 @@ namespace songjunga2549023
             testMinute();
         }
 
-        void input(){
+        virtual void input(std::istream& is = std::cin){
             std::cout << " enter hour(0-23): ";
-            std::cin >> hour;
+            is >> hour;
             testHour();
             std::cout << "enter a minute(0-59): ";
-            std::cin >> minute;
+            is >> minute;
             testMinute();
             
+        }
+        //std::istream -> std:;cin(standard input)
+        //             ->  std::ifstream (+file)
+        virtual void print(std::ostream& os = std::cout) const 
+        {
+            os << std::setw(2) << std::setfill('0') << hour << ':';
+            os << std::setw(2) << std::setfill('0') << minute;
+
+            // if (hour < 10) std::cout << "0";
+            // std::cout << hour << ":";
+            // if (minute < 10) std::cout << "0";
+            // std::cout << minute;
         }
         void setHour(int h){
             hour = h;
@@ -47,15 +67,8 @@ namespace songjunga2549023
             minute = m;
             testMinute();
         }
-        virtual void print(std::ostream& os = std::cout) const {
-            os << std::setw(2) << std::setfill('0') << hour << ':';
-            os << std::setw(2) << std::setfill('0') << minute;
 
-            // if (hour < 10) std::cout << "0";
-            // std::cout << hour << ":";
-            // if (minute < 10) std::cout << "0";
-            // std::cout << minute;
-        }
+        
         virtual ~timeOfDay(){} 
         int getHour() const {
             return hour;
@@ -88,13 +101,10 @@ namespace songjunga2549023
         friend std::istream& operator>>(std::istream& is, timeOfDay& t)
         {
             //std::cin(input()) --> is
-            std::cout << "Enter hour(0-23): "; 
-            is >> t.hour; t.testHour();
-            std::cout << "Enter a minute(0-59): "; 
-            is >> t.minute ; t.testMinute();
-
+            t.input(is);
             return is;
         }
+
         //std::ostream --> std::cout(standard output) , std::ofstream(+file)
         friend std::ostream& operator<<(std::ostream& os, const timeOfDay& t)
         {

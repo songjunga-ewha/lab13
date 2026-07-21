@@ -19,11 +19,14 @@ namespace songjunga2549023
     private: 
         int second;
         void testSecond(){
-            if ((second<0) || (second >59)){
-                std::cout << "invalid second!\n";
-                std::exit(1);
-            }
+            if ((second<0) || (second >59))
+                //std::cout << "invalid second!\n"; std::exit(1);
+                throw timeException{"invalid second!\n"};
+                
         }
+    //4. preciseTime.h: 지난 실습에서 만든 클래스에 다음을 변경
+
+    //std::exit함수를 호출하는 부분을 예외클래스에 메시지를 넣어 던지게 변경
     public: 
         preciseTime(int h =0, int m=0, int s=0) :timeOfDay{h, m}, second{s} 
         {
@@ -47,6 +50,15 @@ namespace songjunga2549023
             os << std::setw(2) << std::setfill('0') << second <<std::endl;
 
         }
+        virtual void input(std::istream& is = std::cin) override
+        {
+            timeOfDay::input(is);
+            std::cout<< "enter second: ";
+            is >> second;
+            testSecond();
+
+        }    
+    
         virtual ~preciseTime(){}
 
 
